@@ -322,7 +322,9 @@ function CodeBlock({ code, label="C++", execLine=-1, hlLines=[] }) {
   );
 }
 
-// ── SLOW EXECUTION VISUALIZER ─────────────────────────────────────────────────
+
+
+// ── EXECUTION VISUALIZER ─────────────────────────────────────────────────
 function ExecutionVisualizer({ steps, code, title, accent="#4f46e5", speed=1200 }) {
   const [step, setStep] = useState(-1);
   const [playing, setPlaying] = useState(false);
@@ -373,7 +375,7 @@ function ExecutionVisualizer({ steps, code, title, accent="#4f46e5", speed=1200 
                 <div key={k} style={{display:"flex",alignItems:"center",gap:9,animation:"fadeUp 0.3s ease"}}>
                   <span style={{fontFamily:"var(--font-mono)",fontSize:12.5,color:accent,fontWeight:700,minWidth:44}}>{k}</span>
                   <span style={{color:"var(--ink4)",fontSize:11}}>=</span>
-                  <span style={{fontFamily:"var(--font-mono)",fontSize:13,fontWeight:700,color:"var(--ink)",background:`${accent}14`,padding:"3px 12px",borderRadius:9,border:`1px solid ${accent}28`}}>{v}</span>
+                  <span style={{fontFamily:"var(--font-mono)",fontSize:13,fontWeight:700,color:"var(--ink)",background:`${accent}14`,padding:"3px 12px",borderRadius:9,border:`1px solid ${accent}28`}}>{String(v)}</span>
                 </div>
               ))}
               {cur.note && (
