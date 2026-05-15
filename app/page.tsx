@@ -189,21 +189,71 @@ function injectStyles() {
 const KW = new Set(["if","else","for","while","do","switch","case","default","break","continue","goto","return","int","float","double","char","bool","void","const","auto","class","struct","using","namespace","new","delete","true","false","nullptr","string","endl","public","private","protected","static","inline"]);
 const TYPES = new Set(["int","float","double","char","bool","void","string","auto","long","short","unsigned"]);
 
-function tokenize(line) {
-  const toks = []; let rest = line;
+interface Token {
+  t: string;
+  v: string;
+}
+
+function tokenize(line: string): Token[] {
+  const toks: Token[] = [];
+  let rest = line;
+  
   while (rest.length) {
-    let m;
-    if ((m=rest.match(/^(\/\/.*)/))) { toks.push({t:"cmt",v:m[1]}); rest=""; continue; }
-    if ((m=rest.match(/^("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/))) { toks.push({t:"str",v:m[1]}); rest=rest.slice(m[1].length); continue; }
-    if ((m=rest.match(/^(#\w+)/))) { toks.push({t:"pp",v:m[1]}); rest=rest.slice(m[1].length); continue; }
-    if ((m=rest.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/))) {
-      const w=m[1]; const cls=KW.has(w)?(TYPES.has(w)?"type":"kw"):rest[w.length]==="("?"fn":"plain";
-      toks.push({t:cls,v:w}); rest=rest.slice(w.length); continue;
+    let m: RegExpMatchArray | null;
+    
+    // Comments
+    if ((m = rest.match(/^(\/\/.*)/))) {
+      toks.push({ t: "cmt", v: m[1] });
+      rest = "";
+      continue;
     }
-    if ((m=rest.match(/^(\d+\.?\d*)/))) { toks.push({t:"num",v:m[1]}); rest=rest.slice(m[1].length); continue; }
-    if ((m=rest.match(/^([<>=!&|+\-*/%^~?:,;])/))) { toks.push({t:"op",v:m[1]}); rest=rest.slice(1); continue; }
-    toks.push({t:"plain",v:rest[0]}); rest=rest.slice(1);
+    
+    // Strings
+    if ((m = rest.match(/^("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/))) {
+      toks.push({ t: "str", v: m[1] });
+      rest = rest.slice(m[1].length);
+      continue;
+    }
+    
+    // Preprocessor directives
+    if ((m = rest.match(/^(#\w+)/))) {
+      toks.push({ t: "pp", v: m[1] });
+      rest = rest.slice(m[1].length);
+      continue;
+    }
+    
+    // Keywords and identifiers
+    if ((m = rest.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/))) {
+      const w = m[1];
+      const isKeyword = KW.has(w);
+      const isType = TYPES.has(w);
+      let cls = "plain";
+      if (isKeyword) cls = isType ? "type" : "kw";
+      else if (rest[w.length] === "(") cls = "fn";
+      toks.push({ t: cls, v: w });
+      rest = rest.slice(w.length);
+      continue;
+    }
+    
+    // Numbers
+    if ((m = rest.match(/^(\d+\.?\d*)/))) {
+      toks.push({ t: "num", v: m[1] });
+      rest = rest.slice(m[1].length);
+      continue;
+    }
+    
+    // Operators
+    if ((m = rest.match(/^([<>=!&|+\-*/%^~?:,;])/))) {
+      toks.push({ t: "op", v: m[1] });
+      rest = rest.slice(1);
+      continue;
+    }
+    
+    // Any other character
+    toks.push({ t: "plain", v: rest[0] });
+    rest = rest.slice(1);
   }
+  
   return toks;
 }
 
