@@ -601,6 +601,9 @@ function TipBox({ tips, accent="#4f46e5" }) {
 }
 
 // ── AUTH SCREEN ───────────────────────────────────────────────────────────────
+
+
+// ── AUTH SCREEN ───────────────────────────────────────────────────────────────
 function Particle({ style }) {
   return <div style={{position:"absolute",width:4,height:4,borderRadius:"50%",background:"rgba(148,163,255,0.5)",...style}} />;
 }
@@ -608,7 +611,7 @@ function Particle({ style }) {
 function AuthScreen({ onAuth }) {
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name:"", email:"", password:"" });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
   const [strength, setStrength] = useState(0);
   const [particles] = useState(()=>Array.from({length:18},(_,i)=>({
@@ -617,7 +620,7 @@ function AuthScreen({ onAuth }) {
     opacity:0.3+Math.random()*0.4, width:3+Math.random()*4, height:3+Math.random()*4,
   })));
 
-  const calcStrength = (p) => {
+  const calcStrength = (p: string) => {
     let s=0;
     if(p.length>=6) s++;
     if(p.match(/[A-Z]/)) s++;
@@ -627,7 +630,7 @@ function AuthScreen({ onAuth }) {
   };
 
   const validate = () => {
-    const e={};
+    const e: { name?: string; email?: string; password?: string } = {};
     if(mode==="signup" && form.name.trim().length<2) e.name="Name must be at least 2 characters";
     if(!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email="Enter a valid email";
     if(form.password.length<6) e.password="Password must be at least 6 characters";
@@ -769,6 +772,8 @@ function AuthScreen({ onAuth }) {
     </div>
   );
 }
+
+
 
 // ── TOPICS ────────────────────────────────────────────────────────────────────
 const TOPICS = [
